@@ -1,3 +1,5 @@
+import 'module-alias/register';
+
 import config from '@/config';
 
 import prisma from '@/lib/prisma';
@@ -11,13 +13,13 @@ const server = app.listen(config.port, () => {
   console.log(`Server started: http://127.0.0.1:${port}`);
 });
 
-nodeCron.schedule('0 * * * *', async () => {
+nodeCron.schedule('* * * * *', async () => {
   weatherBroadcastService.broadcast('hourly').catch((error) => {
     console.error('Error broadcasting hourly weather:', error);
   });
 });
 
-nodeCron.schedule('0 0 0 * *', async () => {
+nodeCron.schedule('* * * * *', async () => {
   weatherBroadcastService.broadcast('daily').catch((error) => {
     console.error('Error broadcasting hourly weather:', error);
   });
