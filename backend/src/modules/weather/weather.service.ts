@@ -1,21 +1,21 @@
-import { WeatherApiService } from '@/common/services/weather-api/weather-api';
-import { Weather } from './types/weather';
+import { IWeatherApiService } from '@/common/interfaces/weather-api-service';
+import { WeatherResponse } from './types/weather';
 
 export interface WeatherServiceConfig {
   apiKey: string;
 }
 
 export class WeatherService {
-  constructor(private weatherApiService: WeatherApiService) {}
+  constructor(private weatherApiService: IWeatherApiService) {}
 
-  async getWeatherByCity(city: string): Promise<Weather> {
-    const { current } = await this.weatherApiService.getWeatherByCity(city);
+  async getWeatherByCity(city: string): Promise<WeatherResponse> {
+    const weather = await this.weatherApiService.getWeatherByCity(city);
 
-    const description = `Weather in ${city}: ${current.temp_c}°C, ${current.humidity}%, ${current.condition.text}`;
+    const description = `Weather in ${city}: ${weather.temperature.c}°C, ${weather.humidity}%, ${weather.shortDescription}`;
 
     return {
-      temperature: current.temp_c,
-      humidity: current.humidity,
+      temperature: weather.temperature.c,
+      humidity: weather.humidity,
       description,
     };
   }

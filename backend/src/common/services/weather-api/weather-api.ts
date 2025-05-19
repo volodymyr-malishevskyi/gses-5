@@ -1,4 +1,5 @@
 import { HttpClient } from '@/common/http-client';
+import { IWeatherApiService, Weather } from '@/common/interfaces/weather-api-service';
 import { CityNotFoundError, WeatherApiError } from './errors/weather-api';
 import { ErrorCode, ErrorResponse, WeatherResponse } from './types/weather-api';
 
@@ -6,13 +7,13 @@ export interface WeatherApiServiceConfig {
   apiKey: string;
 }
 
-export class WeatherApiService {
+export class WeatherApiService implements IWeatherApiService {
   constructor(
     private httpClient: HttpClient,
     private config: WeatherApiServiceConfig,
   ) {}
 
-  async getWeatherByCity(city: string): Promise<WeatherResponse> {
+  async getWeatherByCity(city: string): Promise<Weather> {
     const { apiKey } = this.config;
 
     const response = await this.httpClient.get<WeatherResponse | ErrorResponse>(
@@ -45,6 +46,16 @@ export class WeatherApiService {
       throw new WeatherApiError(error.message, error.code);
     }
 
-    return response.data as WeatherResponse;
+    const { current, location } = response.data as WeatherResponse;
+
+    return {
+      city: location.name,
+      humidity: current.humidity,
+      temperature: {
+        c: current.temp_c,
+        f: current.temp_f,
+      },
+      shortDescription: current.condition.text,
+    };
   }
 }

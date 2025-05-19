@@ -1,5 +1,3 @@
-import config from './config';
-
 import cors from 'cors';
 import express from 'express';
 import errorHandleMiddleware from './common/middlewares/error-handle';
@@ -12,11 +10,8 @@ app.use(cors());
 
 import prisma from './lib/prisma';
 
-// Common
-import { FetchHttpClient } from './common/http-client';
-import { WeatherApiService } from './common/services/weather-api/weather-api';
-const httpClient = new FetchHttpClient();
-const weatherApiService = new WeatherApiService(httpClient, config.weather);
+// Common Dependencies
+import { emailingService, weatherApiService } from './dependencies';
 
 // Weather Module
 import { WeatherController } from './modules/weather/weather.controller';
@@ -27,15 +22,10 @@ const weatherController = new WeatherController(weatherService);
 app.use('/api', weatherRouterFactory(weatherController));
 
 // Subscription Module
-import { GmailEmailingService } from '@/common/services/gmail-emailing';
 import { SubscriptionController } from './modules/subscription/subscription.controller';
 import subscriptionRouterFactory from './modules/subscription/subscription.router';
 import { SubscriptionService } from './modules/subscription/subscription.service';
-const emailingService = new GmailEmailingService({
-  user: config.smtp.user,
-  password: config.smtp.password,
-  from: config.smtp.from,
-});
+
 const subscriptionService = new SubscriptionService(prisma, emailingService);
 const subscriptionController = new SubscriptionController(subscriptionService);
 app.use('/api', subscriptionRouterFactory(subscriptionController));
