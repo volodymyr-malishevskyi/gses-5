@@ -83,4 +83,30 @@ export class SubscriptionService {
       `,
     });
   }
+
+  async unsubscribe(token: string): Promise<void> {
+    const subscription = await this.prisma.subscription.findUnique({
+      where: { revokeToken: token },
+    });
+
+    if (!subscription) {
+      throw new TokenNotFound();
+    }
+
+    await this.prisma.subscription.delete({
+      where: { revokeToken: token },
+    });
+
+    this.emailingService.sendEmail({
+      to: subscription.email,
+      subject: 'Weather Subscription Successfully Unsubscribed!',
+      html: `
+        <p>Your subscription successfully unsubscribed!</p>
+        <br>
+        <p>City: ${subscription.city}</p>
+        <p>Frequency: ${subscription.frequency}</p>
+        <br>
+      `,
+    });
+  }
 }

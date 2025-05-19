@@ -29,6 +29,7 @@ export class SubscriptionController {
       next(error);
     }
   }
+
   async confirmSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const token = z.string().parse(req.params.token);
@@ -38,6 +39,23 @@ export class SubscriptionController {
     } catch (error) {
       if (error instanceof z.ZodError) {
         return next(new HTTPBadRequestError('Invalid request'));
+      }
+      if (error instanceof TokenNotFound) {
+        return next(new HTTPNotFoundError(error.message));
+      }
+      next(error);
+    }
+  }
+
+  async unsubscribe(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const token = z.string().parse(req.params.token);
+
+      await this.subscriptionService.unsubscribe(token);
+      res.json({ message: 'Unsubscribed successfully' });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return next(new HTTPBadRequestError('Invalid token'));
       }
       if (error instanceof TokenNotFound) {
         return next(new HTTPNotFoundError(error.message));
