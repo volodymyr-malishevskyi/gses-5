@@ -1,6 +1,6 @@
 import config from '@/config';
 
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 const isDev = config.nodeEnv === 'development';
 
@@ -10,4 +10,4 @@ const prisma = new PrismaClient({
 
 export default prisma;
 
-export * from '@/generated/prisma';
+export * from '@prisma/client';

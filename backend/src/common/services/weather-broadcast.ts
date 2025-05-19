@@ -1,4 +1,4 @@
-import { PrismaClient } from '@/generated/prisma';
+import { PrismaClient } from '@/lib/prisma';
 import { IEmailingService } from '../interfaces/emailing-service';
 import { IWeatherApiService } from '../interfaces/weather-api-service';
 import delay from '../utils/delay';
