@@ -6,10 +6,10 @@ services:
     # image: weather_app
     # container_name: weather_app
     ports:
-      - 8000:3000
+      - ${COMPOSE_BACKEND_PORT}:3000
     environment:
       PORT: 3000
-      APP_URL: http://localhost:8000
+      APP_URL: ${APP_URL}
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public
       WEATHER_API_KEY: ${WEATHER_API_KEY}
 
