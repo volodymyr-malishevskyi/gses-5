@@ -1,6 +1,6 @@
 import { HTTPBadRequestError, HTTPNotFoundError } from '@/common/errors/http-error';
+import { CityNotFoundError } from '@/common/services/weather-api/errors/weather-api';
 import { NextFunction, Request, Response } from 'express';
-import { CityNotFoundError } from './errors/weather-service';
 import { WeatherService } from './weather.service';
 
 export class WeatherController {

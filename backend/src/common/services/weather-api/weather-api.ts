@@ -2,14 +2,14 @@ import { HttpClient } from '@/common/http-client';
 import { CityNotFoundError, WeatherApiError } from './errors/weather-api';
 import { ErrorCode, ErrorResponse, WeatherResponse } from './types/weather-api';
 
-export interface WeatherServiceConfig {
+export interface WeatherApiServiceConfig {
   apiKey: string;
 }
 
-export class WeatherService {
+export class WeatherApiService {
   constructor(
     private httpClient: HttpClient,
-    private config: WeatherServiceConfig,
+    private config: WeatherApiServiceConfig,
   ) {}
 
   async getWeatherByCity(city: string): Promise<WeatherResponse> {

@@ -12,13 +12,17 @@ app.use(cors());
 
 import prisma from './lib/prisma';
 
-// Weather Module
+// Common
 import { FetchHttpClient } from './common/http-client';
+import { WeatherApiService } from './common/services/weather-api/weather-api';
+const httpClient = new FetchHttpClient();
+const weatherApiService = new WeatherApiService(httpClient, config.weather);
+
+// Weather Module
 import { WeatherController } from './modules/weather/weather.controller';
 import weatherRouterFactory from './modules/weather/weather.router';
 import { WeatherService } from './modules/weather/weather.service';
-const httpClient = new FetchHttpClient();
-const weatherService = new WeatherService(httpClient, config.weather);
+const weatherService = new WeatherService(weatherApiService);
 const weatherController = new WeatherController(weatherService);
 app.use('/api', weatherRouterFactory(weatherController));
 
