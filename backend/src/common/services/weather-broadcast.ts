@@ -44,7 +44,7 @@ export class WeatherBroadcastService {
       const emailContent = `
           <h1>Weather Update for ${weather.city}</h1>
           <p>Temperature: ${weather.temperature.c}°C</p>
-          <p>Humidity: ${weather.temperature.c}%</p>
+          <p>Humidity: ${weather.humidity}%</p>
         `;
 
       for (const email of emails) {
