@@ -1,4 +1,4 @@
-import { HTTPBadRequestError } from '@/common/errors/http-error';
+import { HTTPBadRequestError, HTTPNotFoundError } from '@/common/errors/http-error';
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 import { EmailAlreadySubscribed, TokenNotFound } from './errors/subscription-service';
@@ -40,7 +40,7 @@ export class SubscriptionController {
         return next(new HTTPBadRequestError('Invalid request'));
       }
       if (error instanceof TokenNotFound) {
-        return next(new HTTPBadRequestError(error.message));
+        return next(new HTTPNotFoundError(error.message));
       }
       next(error);
     }
