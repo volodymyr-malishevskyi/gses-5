@@ -1,10 +1,16 @@
 import { config as dotEnvConfig } from 'dotenv';
-import { z } from 'zod';
 dotEnvConfig();
+
+import { z } from 'zod';
+import safeJsonParse from './common/utils/safe-json-parse';
 
 const configSource = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+  broadcastCrons: safeJsonParse(process.env.BROADCAST_CRONS, [
+    ['daily', '0 0 * * *'],
+    ['hourly', '0 * * * *'],
+  ]),
   smtp: {
     user: process.env.SMTP_USER,
     password: process.env.SMTP_PASSWORD,
@@ -21,6 +27,7 @@ const configSchema = z.object({
     errorMap: () => ({ message: 'NODE_ENV must be either "development" or "production"' }),
   }),
   port: z.number().min(1, 'PORT must be a positive integer').max(65535, 'PORT must be a valid port number'),
+  broadcastCrons: z.array(z.tuple([z.enum(['daily', 'hourly']), z.string()])),
   smtp: z.object({
     user: z.string().min(1, 'SMTP_USER is required'),
     password: z.string().min(1, 'SMTP_PASSWORD is required'),

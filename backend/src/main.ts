@@ -7,21 +7,23 @@ import nodeCron from 'node-cron';
 import app from './app';
 import { weatherBroadcastService } from './dependencies';
 
-const port = process.env.PORT || 3000;
+const port = config.port;
 
-const server = app.listen(config.port, () => {
+const server = app.listen(port, () => {
   console.log(`Server started: http://127.0.0.1:${port}`);
 });
 
-nodeCron.schedule('* * * * *', async () => {
-  weatherBroadcastService.broadcast('hourly').catch((error) => {
-    console.error('Error broadcasting hourly weather:', error);
-  });
-});
+config.broadcastCrons.forEach(([type, cron]) => {
+  if (!nodeCron.validate(cron)) {
+    console.error(`Invalid cron expression for ${type}: ${cron}, skipping...`);
+    return;
+  }
 
-nodeCron.schedule('* * * * *', async () => {
-  weatherBroadcastService.broadcast('daily').catch((error) => {
-    console.error('Error broadcasting hourly weather:', error);
+  console.log(`Scheduling ${type} weather broadcast with cron: ${cron}`);
+  nodeCron.schedule(cron, async () => {
+    weatherBroadcastService.broadcast(type).catch((error) => {
+      console.error(`Error broadcasting ${type} weather:`, error);
+    });
   });
 });
 
