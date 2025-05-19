@@ -15,7 +15,7 @@ services:
       SMTP_USER: ${SMTP_USER}
       SMTP_PASSWORD: ${SMTP_PASSWORD}
     depends_on:
-      - db:
+      db:
         condition: service_healthy
 
   frontend:
