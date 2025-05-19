@@ -1,10 +1,10 @@
 import { HTTPBadRequestError, HTTPNotFoundError } from '@/common/errors/http-error';
 import { CityNotFoundError } from '@/common/services/weather-api/errors/weather-api';
 import { NextFunction, Request, Response } from 'express';
-import { WeatherService } from './weather.service';
+import { IWeatherService } from './types/weather-service';
 
 export class WeatherController {
-  constructor(private weatherService: WeatherService) {}
+  constructor(private weatherService: IWeatherService) {}
 
   async getWeatherByCity(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

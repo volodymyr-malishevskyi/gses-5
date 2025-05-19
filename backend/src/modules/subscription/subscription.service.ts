@@ -43,6 +43,7 @@ export class SubscriptionService {
               externalId: mostRelevantCity.id,
             },
             create: {
+              externalId: mostRelevantCity.id,
               name: mostRelevantCity.name,
               region: mostRelevantCity.region,
               country: mostRelevantCity.country,

@@ -1,10 +1,6 @@
 import { IWeatherApiService } from '@/common/interfaces/weather-api-service';
 import { WeatherResponse } from './types/weather';
 
-export interface WeatherServiceConfig {
-  apiKey: string;
-}
-
 export class WeatherService {
   constructor(private weatherApiService: IWeatherApiService) {}
 

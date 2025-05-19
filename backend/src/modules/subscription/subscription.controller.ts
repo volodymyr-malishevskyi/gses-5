@@ -2,10 +2,10 @@ import { HTTPBadRequestError, HTTPNotFoundError } from '@/common/errors/http-err
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 import { EmailAlreadySubscribed, TokenNotFound } from './errors/subscription-service';
-import { SubscriptionService } from './subscription.service';
+import { ISubscriptionService } from './types/subscription-service';
 
 export class SubscriptionController {
-  constructor(private subscriptionService: SubscriptionService) {}
+  constructor(private subscriptionService: ISubscriptionService) {}
 
   async subscribe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
