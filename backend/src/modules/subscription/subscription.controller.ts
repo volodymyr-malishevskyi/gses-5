@@ -34,7 +34,7 @@ export class SubscriptionController {
       const token = z.string().parse(req.params.token);
 
       await this.subscriptionService.confirmSubscription(token);
-      res.json({ message: 'Subscription successful. Confirmation email sent.' });
+      res.json({ message: 'Subscription confirmed! successfully' });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return next(new HTTPBadRequestError('Invalid request'));
