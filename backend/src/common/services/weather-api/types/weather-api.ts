@@ -1,3 +1,5 @@
+import { City } from '@/common/interfaces/weather-api-service';
+
 export interface WeatherResponse {
   location: {
     name: string;
@@ -45,6 +47,8 @@ export interface WeatherResponse {
     gust_kph: number;
   };
 }
+
+export type CityResponse = City[];
 
 export interface ErrorResponse {
   error: {

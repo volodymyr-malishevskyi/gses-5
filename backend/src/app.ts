@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import errorHandleMiddleware from './common/middlewares/error-handle';
+import config from './config';
 
 const app = express();
 
@@ -25,8 +26,9 @@ app.use('/api', weatherRouterFactory(weatherController));
 import { SubscriptionController } from './modules/subscription/subscription.controller';
 import subscriptionRouterFactory from './modules/subscription/subscription.router';
 import { SubscriptionService } from './modules/subscription/subscription.service';
-
-const subscriptionService = new SubscriptionService(prisma, emailingService);
+const subscriptionService = new SubscriptionService(prisma, weatherApiService, emailingService, {
+  appUrl: config.appUrl,
+});
 const subscriptionController = new SubscriptionController(subscriptionService);
 app.use('/api', subscriptionRouterFactory(subscriptionController));
 

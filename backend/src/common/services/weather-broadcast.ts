@@ -29,20 +29,23 @@ export class WeatherBroadcastService {
       return;
     }
 
-    const cityToSubscriptions = new Map<string, string[]>();
+    const citySubscriptions = new Map<string, string[]>();
 
     for (const subscription of subscriptions) {
-      if (!cityToSubscriptions.has(subscription.city)) {
-        cityToSubscriptions.set(subscription.city, []);
+      const cityFullName = subscription.city.fullName;
+
+      if (!citySubscriptions.has(cityFullName)) {
+        citySubscriptions.set(cityFullName, []);
       }
-      cityToSubscriptions.get(subscription.city)?.push(subscription.email);
+
+      citySubscriptions.get(cityFullName)?.push(subscription.email);
     }
 
-    for (const [city, emails] of cityToSubscriptions) {
-      const weather = await this.weatherApiService.getWeatherByCity(city);
+    for (const [cityFullName, emails] of citySubscriptions) {
+      const weather = await this.weatherApiService.getWeatherByCity(cityFullName);
 
       const emailContent = `
-          <h1>Weather Update for ${weather.city}</h1>
+          <h1>Weather Update for ${cityFullName}</h1>
           <p>Temperature: ${weather.temperature.c}°C</p>
           <p>Humidity: ${weather.humidity}%</p>
         `;
@@ -51,7 +54,7 @@ export class WeatherBroadcastService {
         try {
           await this.emailingService.sendEmail({
             to: email,
-            subject: `Weather Update for ${city}`,
+            subject: `Weather Update for ${cityFullName}`,
             html: emailContent,
           });
         } catch (e) {

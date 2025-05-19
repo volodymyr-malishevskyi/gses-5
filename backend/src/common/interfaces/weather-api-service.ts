@@ -8,6 +8,17 @@ export type Weather = {
   shortDescription: string;
 };
 
+export type City = {
+  id: number;
+  name: string;
+  region: string;
+  country: string;
+  lat: number;
+  lon: number;
+  url: string;
+};
+
 export interface IWeatherApiService {
   getWeatherByCity(city: string): Promise<Weather>;
+  searchCity(city: string): Promise<City[]>;
 }

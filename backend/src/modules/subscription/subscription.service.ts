@@ -1,4 +1,5 @@
 import { IEmailingService } from '@/common/interfaces/emailing-service';
+import { IWeatherApiService } from '@/common/interfaces/weather-api-service';
 import { PrismaClient } from '@/lib/prisma';
 import crypto from 'crypto';
 import { EmailAlreadySubscribed, TokenNotFound } from './errors/subscription-service';
@@ -12,7 +13,9 @@ function generateToken(length: number): string {
 export class SubscriptionService {
   constructor(
     private prisma: PrismaClient,
+    private weatherApiService: IWeatherApiService,
     private emailingService: IEmailingService,
+    private readonly config: { appUrl: string },
   ) {}
 
   async subscribe(email: string, city: string, frequency: 'daily' | 'hourly'): Promise<void> {
@@ -24,17 +27,42 @@ export class SubscriptionService {
       throw new EmailAlreadySubscribed();
     }
 
+    const cities = await this.weatherApiService.searchCity(city);
+
+    const mostRelevantCity = cities[0];
+
     const confirmationToken = generateToken(TOKEN_LENGTH);
     const revokeToken = generateToken(TOKEN_LENGTH);
 
-    await this.prisma.subscription.create({
+    const subscription = await this.prisma.subscription.create({
       data: {
         email,
-        city,
+        city: {
+          connectOrCreate: {
+            where: {
+              externalId: mostRelevantCity.id,
+            },
+            create: {
+              name: mostRelevantCity.name,
+              region: mostRelevantCity.region,
+              country: mostRelevantCity.country,
+              fullName: [mostRelevantCity.name, mostRelevantCity.region, mostRelevantCity.country].join(', '),
+              latitude: mostRelevantCity.lat,
+              longitude: mostRelevantCity.lon,
+            },
+          },
+        },
         frequency,
         confirmationToken,
         revokeToken,
         isConfirmed: false,
+      },
+      include: {
+        city: {
+          select: {
+            fullName: true,
+          },
+        },
       },
     });
 
@@ -45,12 +73,12 @@ export class SubscriptionService {
         <p>
           You requested a subscription to weather updates.
           Please confirm your subscription by clicking the link: 
-          <a href="${process.env.APP_URL}/api/confirm/${confirmationToken}">Confirm Subscription</a>
+          <a href="${this.config.appUrl}/api/confirm/${confirmationToken}">Confirm Subscription</a>
         </p>
         
         <br>
-        <p>City: ${city}</p>
-        <p>Frequency: ${frequency}</p>
+        <p>City: ${subscription.city.fullName}</p>
+        <p>Frequency: ${subscription.frequency.toLowerCase()}</p>
         <br>
       `,
     });
@@ -59,6 +87,13 @@ export class SubscriptionService {
   async confirmSubscription(token: string): Promise<void> {
     const subscription = await this.prisma.subscription.findUnique({
       where: { confirmationToken: token },
+      include: {
+        city: {
+          select: {
+            fullName: true,
+          },
+        },
+      },
     });
 
     if (!subscription) {
@@ -76,10 +111,10 @@ export class SubscriptionService {
       html: `
         <p>Your subscription successfully confirmed!</p>
         <br>
-        <p>City: ${subscription.city}</p>
-        <p>Frequency: ${subscription.frequency}</p>
+        <p>City: ${subscription.city.fullName}</p>
+        <p>Frequency: ${subscription.frequency.toLowerCase()}</p>
         <br>
-        <p>You always can <a href="${process.env.APP_URL}/api/unsubscribe/${subscription.revokeToken}">Unsubscribe</a></p>
+        <p>You always can <a href="${this.config.appUrl}/api/unsubscribe/${subscription.revokeToken}">Unsubscribe</a></p>
       `,
     });
   }
@@ -87,6 +122,13 @@ export class SubscriptionService {
   async unsubscribe(token: string): Promise<void> {
     const subscription = await this.prisma.subscription.findUnique({
       where: { revokeToken: token },
+      include: {
+        city: {
+          select: {
+            fullName: true,
+          },
+        },
+      },
     });
 
     if (!subscription) {
@@ -103,9 +145,10 @@ export class SubscriptionService {
       html: `
         <p>Your subscription successfully unsubscribed!</p>
         <br>
-        <p>City: ${subscription.city}</p>
-        <p>Frequency: ${subscription.frequency}</p>
+        <p>City: ${subscription.city.fullName}</p>
+        <p>Frequency: ${subscription.frequency.toLowerCase()}</p>
         <br>
+        <p>You always can <a href="${this.config.appUrl}/api/unsubscribe/${subscription.revokeToken}">Unsubscribe</a></p>
       `,
     });
   }
