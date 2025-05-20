@@ -162,13 +162,16 @@ DB_USER=postgres
 DB_PASSWORD=password
 DB_NAME=weather
 
-# https://www.weatherapi.com/my/
 WEATHER_API_KEY=
 
-# GOOGLE SMTP Credentials (working with 2FA and App Password)
+# GOOGLE SMTP Credentials (working with 2FA and app passwords)
 SMTP_FROM=Weather App <noreply@weather.app>
 SMTP_USER=email@example.com
 SMTP_PASSWORD=password
+
+# Url that uses when user clicks on the link in the email
+# Can be URL to Frontend or Backend
+APP_URL=http://localhost:9000
 
 # Cron jobs described in JSON format for subscription types:
 # type - cron rule
