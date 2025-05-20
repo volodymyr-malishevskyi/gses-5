@@ -4,6 +4,17 @@ This repository contains a backend implemented according to the [task](https://g
 
 ## Demo
 
+You can test the service using [swagger.yaml](https://github.com/mykhailo-hrynko/se-school-5/blob/task-description/swagger.yaml) from the task or using a small frontend.
+
+The best way to test is through the frontend: do a city search like Kyiv, subscribe hourly (for testing purposes, hourly subscription is actually every 2 minutes), confirm by email, and check :)
+
+![](docs/weather.png)
+![](docs/subscription.png)
+
+You can cancel your subscription by following the link in the email.
+
+Links:
+
 - [FrontEnd](http://217.78.237.105/)
 - [Backend](http://217.78.237.105:3000/api/weather?city=Kyiv)
 
